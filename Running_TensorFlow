@@ -1,0 +1,158 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Untitled8.ipynb",
+      "provenance": [],
+      "authorship_tag": "ABX9TyOod4JKVdqtJgFEpo+vb5aK",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/jaeholo/TensorFlow-Examples/blob/master/Running_TensorFlow\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "4V_75UR3g4qx",
+        "outputId": "0e726e2b-e744-4f02-e5c5-924945dcac43",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "source": [
+        "!pip install tensorflow==1.6.0"
+      ],
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "Requirement already satisfied: tensorflow==1.6.0 in /usr/local/lib/python3.6/dist-packages (1.6.0)\n",
+            "Requirement already satisfied: tensorboard<1.7.0,>=1.6.0 in /usr/local/lib/python3.6/dist-packages (from tensorflow==1.6.0) (1.6.0)\n",
+            "Requirement already satisfied: gast>=0.2.0 in /usr/local/lib/python3.6/dist-packages (from tensorflow==1.6.0) (0.3.3)\n",
+            "Requirement already satisfied: numpy>=1.13.3 in /usr/local/lib/python3.6/dist-packages (from tensorflow==1.6.0) (1.18.5)\n",
+            "Requirement already satisfied: termcolor>=1.1.0 in /usr/local/lib/python3.6/dist-packages (from tensorflow==1.6.0) (1.1.0)\n",
+            "Requirement already satisfied: six>=1.10.0 in /usr/local/lib/python3.6/dist-packages (from tensorflow==1.6.0) (1.15.0)\n",
+            "Requirement already satisfied: grpcio>=1.8.6 in /usr/local/lib/python3.6/dist-packages (from tensorflow==1.6.0) (1.33.2)\n",
+            "Requirement already satisfied: protobuf>=3.4.0 in /usr/local/lib/python3.6/dist-packages (from tensorflow==1.6.0) (3.12.4)\n",
+            "Requirement already satisfied: wheel>=0.26 in /usr/local/lib/python3.6/dist-packages (from tensorflow==1.6.0) (0.35.1)\n",
+            "Requirement already satisfied: absl-py>=0.1.6 in /usr/local/lib/python3.6/dist-packages (from tensorflow==1.6.0) (0.10.0)\n",
+            "Requirement already satisfied: astor>=0.6.0 in /usr/local/lib/python3.6/dist-packages (from tensorflow==1.6.0) (0.8.1)\n",
+            "Requirement already satisfied: werkzeug>=0.11.10 in /usr/local/lib/python3.6/dist-packages (from tensorboard<1.7.0,>=1.6.0->tensorflow==1.6.0) (1.0.1)\n",
+            "Requirement already satisfied: bleach==1.5.0 in /usr/local/lib/python3.6/dist-packages (from tensorboard<1.7.0,>=1.6.0->tensorflow==1.6.0) (1.5.0)\n",
+            "Requirement already satisfied: markdown>=2.6.8 in /usr/local/lib/python3.6/dist-packages (from tensorboard<1.7.0,>=1.6.0->tensorflow==1.6.0) (3.3.3)\n",
+            "Requirement already satisfied: html5lib==0.9999999 in /usr/local/lib/python3.6/dist-packages (from tensorboard<1.7.0,>=1.6.0->tensorflow==1.6.0) (0.9999999)\n",
+            "Requirement already satisfied: setuptools in /usr/local/lib/python3.6/dist-packages (from protobuf>=3.4.0->tensorflow==1.6.0) (50.3.2)\n",
+            "Requirement already satisfied: importlib-metadata; python_version < \"3.8\" in /usr/local/lib/python3.6/dist-packages (from markdown>=2.6.8->tensorboard<1.7.0,>=1.6.0->tensorflow==1.6.0) (2.0.0)\n",
+            "Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.6/dist-packages (from importlib-metadata; python_version < \"3.8\"->markdown>=2.6.8->tensorboard<1.7.0,>=1.6.0->tensorflow==1.6.0) (3.4.0)\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "UR4DbQcHhtYy"
+      },
+      "source": [
+        "from __future__ import division, print_function, unicode_literals\n",
+        "\n",
+        "# Common imports\n",
+        "import numpy as np\n",
+        "import os\n",
+        "\n",
+        "# to make this notebook's output stable across runs\n",
+        "def reset_graph(seed=42):\n",
+        "    tf.reset_default_graph()\n",
+        "    tf.set_random_seed(seed)\n",
+        "    np.random.seed(seed)\n",
+        "\n",
+        "# To plot pretty figures\n",
+        "%matplotlib inline\n",
+        "import matplotlib\n",
+        "import matplotlib.pyplot as plt\n",
+        "plt.rcParams['axes.labelsize'] = 14\n",
+        "plt.rcParams['xtick.labelsize'] = 12\n",
+        "plt.rcParams['ytick.labelsize'] = 12\n",
+        "\n",
+        "# Where to save the figures\n",
+        "PROJECT_ROOT_DIR = \".\"\n",
+        "CHAPTER_ID = \"tensorflow\"\n",
+        "\n",
+        "def save_fig(fig_id, tight_layout=True):\n",
+        "    path = os.path.join(PROJECT_ROOT_DIR, \"images\", CHAPTER_ID, fig_id + \".png\")\n",
+        "    print(\"Saving figure\", fig_id)\n",
+        "    if tight_layout:\n",
+        "        plt.tight_layout()\n",
+        "    plt.savefig(path, format='png', dpi=300)\n",
+        "    "
+      ],
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "FLkJ_upgh9E_",
+        "outputId": "ac7882ce-6dc7-431c-b187-9354fa22c7e2",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "source": [
+        "import tensorflow as tf"
+      ],
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "/usr/local/lib/python3.6/dist-packages/tensorflow/python/framework/dtypes.py:517: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.\n",
+            "  _np_qint8 = np.dtype([(\"qint8\", np.int8, 1)])\n",
+            "/usr/local/lib/python3.6/dist-packages/tensorflow/python/framework/dtypes.py:518: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.\n",
+            "  _np_quint8 = np.dtype([(\"quint8\", np.uint8, 1)])\n",
+            "/usr/local/lib/python3.6/dist-packages/tensorflow/python/framework/dtypes.py:519: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.\n",
+            "  _np_qint16 = np.dtype([(\"qint16\", np.int16, 1)])\n",
+            "/usr/local/lib/python3.6/dist-packages/tensorflow/python/framework/dtypes.py:520: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.\n",
+            "  _np_quint16 = np.dtype([(\"quint16\", np.uint16, 1)])\n",
+            "/usr/local/lib/python3.6/dist-packages/tensorflow/python/framework/dtypes.py:521: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.\n",
+            "  _np_qint32 = np.dtype([(\"qint32\", np.int32, 1)])\n",
+            "/usr/local/lib/python3.6/dist-packages/tensorflow/python/framework/dtypes.py:526: FutureWarning: Passing (type, 1) or '1type' as a synonym of type is deprecated; in a future version of numpy, it will be understood as (type, (1,)) / '(1,)type'.\n",
+            "  np_resource = np.dtype([(\"resource\", np.ubyte, 1)])\n"
+          ],
+          "name": "stderr"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "v8whBARahvqF"
+      },
+      "source": [
+        "reset_graph()\n",
+        "\n",
+        "x = tf.Variable(3, name=\"x\") \n",
+        "y = tf.Variable(4, name=\"y\")\n",
+        "f = x*x*y + y + 2"
+      ],
+      "execution_count": 6,
+      "outputs": []
+    }
+  ]
+}
